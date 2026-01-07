@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>多维表格聚合入口</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+            background: #f6f7fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .search-box {
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .category {
+            margin-top: 30px;
+        }
+
+        .category h2 {
+            margin-bottom: 10px;
+        }
+
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .card a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .desc {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📊 多维表格 & 常用链接入口</h1>
+
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜索表格名称..." onkeyup="renderLinks()">
+</div>
+
+<div id="container"></div>
+
+<script>
+    // ⭐ 在这里维护你的所有表格 / 链接
+    const data = [
+        {
+            category: "人事管理",
+            links: [
+                { name: "员工信息表", url: "https://example.com/1", desc: "员工基础信息维护" },
+                { name: "入职登记表", url: "https://example.com/2", desc: "新员工入职流程" }
+            ]
+        },
+        {
+            category: "财务相关",
+            links: [
+                { name: "报销申请表", url: "https://example.com/3", desc: "日常费用报销" },
+                { name: "预算统计表", url: "https://example.com/4", desc: "年度预算管理" }
+            ]
+        },
+        {
+            category: "项目管理",
+            links: [
+                { name: "项目进度表", url: "https://example.com/5", desc: "项目状态跟踪" },
+                { name: "需求池", url: "https://example.com/6", desc: "产品需求汇总" }
+            ]
+        }
+    ];
+
+    function renderLinks() {
+        const keyword = document.getElementById("searchInput").value.toLowerCase();
+        const container = document.getElementById("container");
+        container.innerHTML = "";
+
+        data.forEach(group => {
+            const filteredLinks = group.links.filter(item =>
+                item.name.toLowerCase().includes(keyword)
+            );
+
+            if (filteredLinks.length === 0) return;
+
+            const categoryDiv = document.createElement("div");
+            categoryDiv.className = "category";
+
+            categoryDiv.innerHTML = `<h2>${group.category}</h2>`;
+
+            const linksDiv = document.createElement("div");
+            linksDiv.className = "links";
+
+            filteredLinks.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+                    <a href="${item.url}" target="_blank">${item.name}</a>
+                    <div class="desc">${item.desc || ""}</div>
+                `;
+                linksDiv.appendChild(card);
+            });
+
+            categoryDiv.appendChild(linksDiv);
+            container.appendChild(categoryDiv);
+        });
+    }
+
+    renderLinks();
+</script>
+
+</body>
+</html>
