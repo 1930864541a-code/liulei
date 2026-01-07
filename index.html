@@ -2,144 +2,640 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>多维表格聚合入口</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>京湖科技</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-            background: #f6f7fb;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --light-gray: #e9ecef;
+            --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
             margin: 0;
-            padding: 30px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .logo-icon i {
+            font-size: 28px;
+            color: white;
         }
 
         h1 {
-            text-align: center;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--gray-color);
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .search-section {
+            max-width: 700px;
+            margin: 0 auto 50px;
+            position: relative;
         }
 
         .search-box {
-            max-width: 500px;
-            margin: 20px auto;
+            position: relative;
+            width: 100%;
         }
 
         .search-box input {
             width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+            padding: 18px 25px 18px 60px;
+            font-size: 1.1rem;
+            border-radius: var(--border-radius);
+            border: 2px solid transparent;
+            background-color: white;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            color: var(--dark-color);
         }
 
-        .category {
-            margin-top: 30px;
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(76, 201, 240, 0.2);
         }
 
-        .category h2 {
-            margin-bottom: 10px;
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+            font-size: 1.3rem;
         }
 
-        .links {
+        .search-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            color: var(--gray-color);
+            font-size: 0.95rem;
+        }
+
+        .search-hint span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .category-count {
+            background-color: var(--light-gray);
+            color: var(--gray-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
         }
 
         .card {
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            transition: 0.2s;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 25px;
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-color);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-hover);
+            border-top-color: var(--accent-color);
         }
 
-        .card a {
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-actions i {
+            color: var(--gray-color);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .card-actions i:hover {
+            background-color: var(--light-gray);
+            color: var(--primary-color);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .card-title a {
             text-decoration: none;
-            color: #333;
-            font-weight: bold;
+            color: inherit;
+            transition: var(--transition);
         }
 
-        .desc {
-            font-size: 13px;
-            color: #666;
-            margin-top: 5px;
+        .card-title a:hover {
+            color: var(--primary-color);
+        }
+
+        .card-desc {
+            color: var(--gray-color);
+            margin-bottom: 20px;
+            flex-grow: 1;
+            line-height: 1.7;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--light-gray);
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .card-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .card-link:hover {
+            color: var(--secondary-color);
+            gap: 12px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            color: var(--light-gray);
+            margin-bottom: 20px;
+        }
+
+        .no-results h3 {
+            font-size: 1.5rem;
+            color: var(--gray-color);
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px 0;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .footer-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-section {
+                margin-bottom: 35px;
+            }
+            
+            .search-hint {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .category-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-table-cells-large"></i>
+                </div>
+            </div>
+            <h1>京湖科技文档聚合平台</h1>
+            <p class="subtitle">一站式访问和管理公司各类数据表格与常用链接，提升工作效率与数据整合能力</p>
+        </header>
 
-<h1>📊 多维表格 & 常用链接入口</h1>
+        <section class="search-section">
+            <div class="search-box">
+                <div class="search-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <input type="text" id="searchInput" placeholder="搜索表格名称、描述或分类..." onkeyup="renderLinks()">
+            </div>
+            <div class="search-hint">
+                <span><i class="fas fa-lightbulb"></i> 提示：输入关键词快速查找表格</span>
+                <span><i class="fas fa-list"></i> 当前共有 <span id="totalCount">0</span> 个表格</span>
+            </div>
+        </section>
 
-<div class="search-box">
-    <input type="text" id="searchInput" placeholder="搜索表格名称..." onkeyup="renderLinks()">
-</div>
+        <main id="container"></main>
 
-<div id="container"></div>
+        <footer>
+            <p>© 2023 多维表格聚合系统 | 为提升团队协作效率而设计</p>
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-question-circle"></i> 使用帮助</a>
+                <a href="#"><i class="fas fa-plus-circle"></i> 添加新表格</a>
+                <a href="#"><i class="fas fa-cog"></i> 系统设置</a>
+            </div>
+        </footer>
+    </div>
 
-<script>
-    // ⭐ 在这里维护你的所有表格 / 链接
-    const data = [
-        {
-            category: "人事管理",
-            links: [
-                { name: "员工信息表", url: "https://example.com/1", desc: "员工基础信息维护" },
-                { name: "入职登记表", url: "https://example.com/2", desc: "新员工入职流程" }
-            ]
-        },
-        {
-            category: "财务相关",
-            links: [
-                { name: "报销申请表", url: "https://example.com/3", desc: "日常费用报销" },
-                { name: "预算统计表", url: "https://example.com/4", desc: "年度预算管理" }
-            ]
-        },
-        {
-            category: "项目管理",
-            links: [
-                { name: "项目进度表", url: "https://example.com/5", desc: "项目状态跟踪" },
-                { name: "需求池", url: "https://example.com/6", desc: "产品需求汇总" }
-            ]
-        }
-    ];
+    <script>
+        // 表格数据
+        const data = [
+            {
+                category: "人事管理",
+                icon: "fas fa-users",
+                color: "#4361ee",
+                links: [
+                    { 
+                        name: "员工信息表", 
+                        url: "https://example.com/1", 
+                        desc: "员工基础信息维护，包含联系方式、部门、职位等详细信息",
+                        icon: "fas fa-address-card",
+                        lastUpdated: "2023-10-15"
+                    },
+                    { 
+                        name: "入职登记表", 
+                        url: "https://example.com/2", 
+                        desc: "新员工入职流程，包含资料提交、设备申请、培训安排等",
+                        icon: "fas fa-user-plus",
+                        lastUpdated: "2023-10-10"
+                    },
+                    { 
+                        name: "绩效考核表", 
+                        url: "https://example.com/7", 
+                        desc: "员工季度与年度绩效评估记录",
+                        icon: "fas fa-chart-line",
+                        lastUpdated: "2023-09-28"
+                    }
+                ]
+            },
+            {
+                category: "财务相关",
+                icon: "fas fa-chart-pie",
+                color: "#3a0ca3",
+                links: [
+                    { 
+                        name: "报销申请表", 
+                        url: "https://example.com/3", 
+                        desc: "日常费用报销申请与审批流程",
+                        icon: "fas fa-file-invoice-dollar",
+                        lastUpdated: "2023-10-12"
+                    },
+                    { 
+                        name: "预算统计表", 
+                        url: "https://example.com/4", 
+                        desc: "年度预算管理与各部门预算执行情况",
+                        icon: "fas fa-calculator",
+                        lastUpdated: "2023-10-05"
+                    },
+                    { 
+                        name: "采购申请表", 
+                        url: "https://example.com/8", 
+                        desc: "物品采购申请与审批流程记录",
+                        icon: "fas fa-shopping-cart",
+                        lastUpdated: "2023-09-30"
+                    }
+                ]
+            },
+            {
+                category: "项目管理",
+                icon: "fas fa-tasks",
+                color: "#4cc9f0",
+                links: [
+                    { 
+                        name: "项目进度表", 
+                        url: "https://example.com/5", 
+                        desc: "项目状态跟踪，包含里程碑、负责人和进度百分比",
+                        icon: "fas fa-project-diagram",
+                        lastUpdated: "2023-10-18"
+                    },
+                    { 
+                        name: "需求池", 
+                        url: "https://example.com/6", 
+                        desc: "产品需求汇总、优先级排序与状态跟踪",
+                        icon: "fas fa-lightbulb",
+                        lastUpdated: "2023-10-14"
+                    },
+                    { 
+                        name: "风险评估表", 
+                        url: "https://example.com/9", 
+                        desc: "项目风险识别、评估与应对措施记录",
+                        icon: "fas fa-exclamation-triangle",
+                        lastUpdated: "2023-10-08"
+                    }
+                ]
+            },
+            {
+                category: "客户管理",
+                icon: "fas fa-handshake",
+                color: "#f72585",
+                links: [
+                    { 
+                        name: "客户信息表", 
+                        url: "https://example.com/10", 
+                        desc: "客户基础信息、联系记录与合作历史",
+                        icon: "fas fa-address-book",
+                        lastUpdated: "2023-10-16"
+                    },
+                    { 
+                        name: "销售跟踪表", 
+                        url: "https://example.com/11", 
+                        desc: "销售机会跟踪与业绩统计分析",
+                        icon: "fas fa-chart-bar",
+                        lastUpdated: "2023-10-11"
+                    }
+                ]
+            }
+        ];
 
-    function renderLinks() {
-        const keyword = document.getElementById("searchInput").value.toLowerCase();
-        const container = document.getElementById("container");
-        container.innerHTML = "";
+        // 初始化渲染
+        function renderLinks() {
+            const keyword = document.getElementById("searchInput").value.toLowerCase().trim();
+            const container = document.getElementById("container");
+            container.innerHTML = "";
+            
+            let totalTables = 0;
+            let hasResults = false;
 
-        data.forEach(group => {
-            const filteredLinks = group.links.filter(item =>
-                item.name.toLowerCase().includes(keyword)
-            );
+            data.forEach(group => {
+                const filteredLinks = group.links.filter(item =>
+                    item.name.toLowerCase().includes(keyword) ||
+                    item.desc.toLowerCase().includes(keyword) ||
+                    group.category.toLowerCase().includes(keyword)
+                );
 
-            if (filteredLinks.length === 0) return;
+                if (filteredLinks.length === 0) return;
+                
+                hasResults = true;
+                totalTables += filteredLinks.length;
 
-            const categoryDiv = document.createElement("div");
-            categoryDiv.className = "category";
+                const categorySection = document.createElement("section");
+                categorySection.className = "category-section";
 
-            categoryDiv.innerHTML = `<h2>${group.category}</h2>`;
-
-            const linksDiv = document.createElement("div");
-            linksDiv.className = "links";
-
-            filteredLinks.forEach(item => {
-                const card = document.createElement("div");
-                card.className = "card";
-                card.innerHTML = `
-                    <a href="${item.url}" target="_blank">${item.name}</a>
-                    <div class="desc">${item.desc || ""}</div>
+                categorySection.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-title">
+                            <i class="${group.icon}" style="color: ${group.color};"></i>
+                            <span>${group.category}</span>
+                            <span class="category-count">${filteredLinks.length}个表格</span>
+                        </div>
+                        <div>
+                            <span style="color: var(--gray-color); font-size: 0.9rem;">共 ${group.links.length} 个表格</span>
+                        </div>
+                    </div>
+                    <div class="cards-grid" id="grid-${group.category}"></div>
                 `;
-                linksDiv.appendChild(card);
+
+                const grid = categorySection.querySelector(`#grid-${group.category}`);
+                
+                filteredLinks.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="${item.icon}"></i>
+                            </div>
+                            <div class="card-actions">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-ellipsis-v"></i>
+                            </div>
+                        </div>
+                        <h3 class="card-title">
+                            <a href="${item.url}" target="_blank">${item.name}</a>
+                        </h3>
+                        <p class="card-desc">${item.desc}</p>
+                        <div class="card-footer">
+                            <span>更新: ${item.lastUpdated}</span>
+                            <a href="${item.url}" target="_blank" class="card-link">
+                                打开表格 <i class="fas fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                container.appendChild(categorySection);
             });
 
-            categoryDiv.appendChild(linksDiv);
-            container.appendChild(categoryDiv);
+            // 更新表格总数
+            document.getElementById("totalCount").textContent = totalTables;
+
+            // 如果没有搜索结果，显示提示信息
+            if (!hasResults && keyword) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>未找到匹配的表格</h3>
+                        <p>没有找到包含"${keyword}"的表格，请尝试其他关键词</p>
+                    </div>
+                `;
+            } else if (!hasResults) {
+                // 如果没有数据（初始状态）
+                container.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-database"></i>
+                        <h3>暂无表格数据</h3>
+                        <p>请检查数据配置或联系管理员添加表格</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 页面加载时渲染
+        document.addEventListener('DOMContentLoaded', function() {
+            renderLinks();
+            
+            // 添加搜索框的输入事件监听
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', renderLinks);
+            
+            // 添加搜索框的焦点效果
+            searchInput.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            searchInput.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+            
+            // 初始显示表格总数
+            let initialTotal = 0;
+            data.forEach(group => {
+                initialTotal += group.links.length;
+            });
+            document.getElementById("totalCount").textContent = initialTotal;
         });
-    }
-
-    renderLinks();
-</script>
-
+    </script>
 </body>
 </html>
