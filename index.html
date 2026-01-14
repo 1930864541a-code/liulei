@@ -85,7 +85,7 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            padding: 0 15px;
+            padding: 0 30px;
             position: relative;
         }
 
@@ -130,6 +130,8 @@
             transition: var(--transition);
             position: relative;
             z-index: 2;
+            /* 新增：调整与搜索按钮的间距 */
+            margin-right: 5px; /* 向右留出10px间距，可根据需要调整 */
         }
 
         .clear-search-btn:hover {
@@ -555,7 +557,7 @@
             
             .clear-search-btn {
                 position: absolute;
-                right: 60px;
+                right: 65px;
                 top: 50%;
                 transform: translateY(-50%);
                 padding: 0 10px;
@@ -593,7 +595,7 @@
         /* 针对非常小的屏幕进一步调整 */
         @media (max-width: 360px) {
             .clear-search-btn {
-                right: 55px;
+                right: 60px;
             }
             
             .search-container input {
