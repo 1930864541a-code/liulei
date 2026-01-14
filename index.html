@@ -416,6 +416,19 @@
             gap: 15px;
         }
 
+        .page-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .page-info i {
+            color: var(--accent-color);
+        }
+
         .quick-actions {
             display: flex;
             flex-wrap: wrap;
@@ -511,6 +524,10 @@
             footer {
                 flex-direction: column;
                 text-align: center;
+            }
+            
+            .page-info, .quick-actions {
+                width: 100%;
             }
         }
 
@@ -644,6 +661,10 @@
         </div>
         
         <footer>
+            <div class="page-info">
+                <i class="fas fa-link"></i>
+                <span id="totalCount">共 8 个链接</span>
+            </div>
             <div class="quick-actions">
                 <div class="quick-action" id="refreshPage">
                     <i class="fas fa-redo"></i>
@@ -813,6 +834,17 @@
                 });
             }
             
+            // 更新总链接数
+            function updateTotalCount() {
+                let totalLinks = 0;
+                navData.categories.forEach(category => {
+                    totalLinks += category.links.length;
+                });
+                // 加上顶部链接
+                totalLinks += 2;
+                totalCount.textContent = `共 ${totalLinks} 个链接`;
+            }
+            
             // 构建搜索索引
             function buildSearchIndex() {
                 allSearchItems = [];
@@ -826,7 +858,8 @@
                         desc: link.querySelector('.top-link-content > div:last-child').textContent,
                         icon: link.querySelector('i').className,
                         type: 'top-link',
-                        category: '顶部链接'
+                        category: '顶部链接',
+                        url: link.href || 'javascript:void(0);'
                     });
                 });
                 
@@ -834,7 +867,7 @@
                 navData.categories.forEach(category => {
                     category.links.forEach(link => {
                         allSearchItems.push({
-                            element: null, // 动态生成
+                            element: null,
                             title: link.title,
                             desc: link.desc,
                             url: link.url,
@@ -844,22 +877,6 @@
                         });
                     });
                 });
-            }
-            
-            // 更新总计数
-            function updateTotalCount() {
-                let totalLinks = 0;
-                navData.categories.forEach(category => {
-                    totalLinks += category.links.length;
-                });
-                
-                // 加上顶部链接
-                totalLinks += 2; // ERP系统和企业邮箱
-                
-                const now = new Date();
-                const formattedDate = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
-                
-                totalCount.textContent = `共 ${totalLinks} 个系统/表格 • 最后更新: ${formattedDate}`;
             }
             
             // 复制邮箱地址功能
@@ -893,15 +910,20 @@
             
             // 高亮文本函数
             function highlightText(text, searchTerm) {
-                if (!searchTerm) return text;
+                if (!searchTerm || !text) return text;
                 
-                const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                return text.replace(regex, '<span class="highlight">$1</span>');
+                try {
+                    const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
+                    return text.replace(regex, '<span class="highlight">$1</span>');
+                } catch(e) {
+                    return text;
+                }
             }
             
             // 搜索功能
             function performSearch() {
-                const searchTerm = searchInput.value.trim().toLowerCase();
+                const searchTerm = searchInput.value.trim();
                 
                 // 显示/隐藏清空按钮
                 if (searchTerm.length > 0) {
@@ -921,19 +943,39 @@
                 }
                 
                 const matchedItems = [];
+                const searchTermLower = searchTerm.toLowerCase();
                 
                 // 搜索匹配
                 allSearchItems.forEach(item => {
-                    const title = item.title.toLowerCase();
-                    const desc = item.desc.toLowerCase();
-                    const category = item.category.toLowerCase();
+                    const title = item.title ? item.title.toLowerCase() : '';
+                    const desc = item.desc ? item.desc.toLowerCase() : '';
+                    const category = item.category ? item.category.toLowerCase() : '';
                     
-                    if (title.includes(searchTerm) || desc.includes(searchTerm) || category.includes(searchTerm)) {
+                    // 检查是否匹配
+                    let matchFound = false;
+                    let score = 0;
+                    
+                    if (title.includes(searchTermLower)) {
+                        matchFound = true;
+                        score += 3;
+                        // 完全匹配标题加分
+                        if (title === searchTermLower) score += 5;
+                    }
+                    
+                    if (desc.includes(searchTermLower)) {
+                        matchFound = true;
+                        score += 2;
+                    }
+                    
+                    if (category.includes(searchTermLower)) {
+                        matchFound = true;
+                        score += 1;
+                    }
+                    
+                    if (matchFound) {
                         matchedItems.push({
                             ...item,
-                            score: (title === searchTerm ? 3 : 0) + 
-                                   (title.includes(searchTerm) ? 2 : 0) + 
-                                   (desc.includes(searchTerm) ? 1 : 0)
+                            score: score
                         });
                     }
                 });
@@ -965,11 +1007,15 @@
                         
                         // 添加点击事件
                         listItem.addEventListener('click', function() {
-                            if (item.type === 'top-link' && item.element.id === 'emailCopyLink') {
+                            if (item.type === 'top-link' && item.title.includes('企业邮箱')) {
                                 copyEmailAddress();
-                            } else if (item.type === 'top-link') {
-                                item.element.click();
-                            } else if (item.type === 'link-item') {
+                            } else if (item.type === 'top-link' && item.url) {
+                                if (item.url.startsWith('http')) {
+                                    window.open(item.url, '_blank');
+                                } else if (item.element) {
+                                    item.element.click();
+                                }
+                            } else if (item.type === 'link-item' && item.url) {
                                 window.open(item.url, '_blank');
                             }
                             
@@ -1021,21 +1067,38 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
             
-            // 点击页面其他地方关闭搜索结果
+            // 修复：点击页面其他地方关闭搜索结果
             document.addEventListener('click', function(e) {
-                if (!searchResults.contains(e.target) && 
-                    e.target !== searchInput && 
-                    e.target !== searchButton && 
-                    e.target !== clearSearchBtn && 
-                    !clearSearchBtn.contains(e.target)) {
-                    searchResults.classList.remove('show');
+                // 检查点击的目标是否是搜索相关元素
+                const isSearchInput = e.target === searchInput;
+                const isSearchButton = e.target === searchButton || searchButton.contains(e.target);
+                const isClearButton = e.target === clearSearchBtn || clearSearchBtn.contains(e.target);
+                const isSearchResults = searchResults.contains(e.target);
+                
+                // 如果点击的是搜索相关元素，不关闭搜索结果
+                if (isSearchInput || isSearchButton || isClearButton || isSearchResults) {
+                    return;
                 }
+                
+                // 否则关闭搜索结果
+                searchResults.classList.remove('show');
             });
             
             // 事件监听
             emailCopyLink.addEventListener('click', copyEmailAddress);
-            searchInput.addEventListener('input', performSearch);
-            searchButton.addEventListener('click', performSearch);
+            
+            // 搜索框输入事件
+            searchInput.addEventListener('input', function() {
+                // 立即执行搜索
+                setTimeout(performSearch, 50);
+            });
+            
+            // 搜索按钮点击事件
+            searchButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                performSearch();
+            });
+            
             clearSearchBtn.addEventListener('click', clearSearch);
             
             // 按Enter键搜索
@@ -1052,6 +1115,10 @@
             
             // 初始化
             initNavigation();
+            
+            // 调试：打印搜索索引
+            console.log('搜索索引已构建，项目数量:', allSearchItems.length);
+            console.log('所有可搜索项目:', allSearchItems);
             
             // 聚焦搜索框
             setTimeout(() => {
