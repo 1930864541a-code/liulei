@@ -648,11 +648,11 @@
                         <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">点击跳转到ERP系统页面</div>
                     </div>
                 </a>
-                <a href="javascript:void(0);" id="emailCopyLink" class="top-link" data-search="企业邮箱 hr01@yaxintuo.com 点击复制邮箱地址">
+                <a href="https://qiye.aliyun.com/" target="_blank" class="top-link" data-search="点击跳转到企业邮箱页面">
                     <i class="fas fa-envelope"></i>
                     <div class="top-link-content">
-                        <div>企业邮箱:hr01@yaxintuo.com</div>
-                        <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">点击复制邮箱地址</div>
+                        <div>企业邮箱</div>
+                        <div style="font-size: 14px; font-weight: normal; opacity: 0.8;">点击跳转到企业邮箱页面</div>
                     </div>
                 </a>
             </div>
@@ -694,7 +694,7 @@
             const resultCount = document.getElementById('resultCount');
             const refreshButton = document.getElementById('refreshPage');
             const viewAllButton = document.getElementById('viewAll');
-            const emailCopyLink = document.getElementById('emailCopyLink');
+            const emailCopyLink = document.getElementById('emailCopyLink'); // 这个ID现在没用了，可以删除
             const copyToast = document.getElementById('copyToast');
             const categoriesContainer = document.getElementById('categoriesContainer');
             const totalCount = document.getElementById('totalCount');
@@ -881,34 +881,11 @@
                 });
             }
             
-            // 复制邮箱地址功能
-            function copyEmailAddress() {
-                const email = 'hr01@yaxintuo.com';
-                navigator.clipboard.writeText(email)
-                    .then(() => {
-                        copyToast.textContent = '企业邮箱复制成功！';
-                        showCopyToast();
-                    })
-                    .catch(err => {
-                        const textArea = document.createElement('textarea');
-                        textArea.value = email;
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textArea);
-                        copyToast.textContent = '企业邮箱复制成功！';
-                        showCopyToast();
-                        console.error('复制失败:', err);
-                    });
-            }
+            // 【修改2】删除复制邮箱的函数（如果不需要可以保留，但不会被调用）
+            // function copyEmailAddress() { ... }
             
-            // 显示复制成功提示框
-            function showCopyToast() {
-                copyToast.classList.add('show');
-                setTimeout(() => {
-                    copyToast.classList.remove('show');
-                }, 3000);
-            }
+            // 【修改3】删除显示复制提示框的函数（如果不需要可以保留）
+            // function showCopyToast() { ... }
             
             // 高亮文本函数
             function highlightText(text, searchTerm) {
@@ -1009,16 +986,11 @@
                         
                         // 添加点击事件
                         listItem.addEventListener('click', function() {
-                            if (item.type === 'top-link' && item.title.includes('企业邮箱')) {
-                                copyEmailAddress();
-                            } else if (item.type === 'top-link' && item.url) {
-                                if (item.url.startsWith('http')) {
-                                    window.open(item.url, '_blank');
-                                } else if (item.element) {
-                                    item.element.click();
-                                }
-                            } else if (item.type === 'link-item' && item.url) {
+                            // 【修改4】移除邮箱复制逻辑，统一改为跳转
+                            if (item.url && item.url.startsWith('http')) {
                                 window.open(item.url, '_blank');
+                            } else if (item.element) {
+                                item.element.click();
                             }
                             
                             // 关闭搜索结果
@@ -1086,8 +1058,8 @@
                 searchResults.classList.remove('show');
             });
             
-            // 事件监听
-            emailCopyLink.addEventListener('click', copyEmailAddress);
+            // 【修改5】移除邮箱复制的事件监听
+            // emailCopyLink.addEventListener('click', copyEmailAddress);
             
             // 搜索框输入事件
             searchInput.addEventListener('input', function() {
